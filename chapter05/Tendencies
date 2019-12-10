@@ -1,0 +1,76 @@
+# Mean = or average, is just the sum of the data divided by its count. Its value depends on the data points.
+
+def mean(xs: List[float]) -> float:
+    return sum(xs) / len(xs)
+    
+# Median = is the middle-most value (if data points# is odd), or the average of the two middle-most vales (if # is even).
+# The median represents the value under which 50% of the data lies.
+
+def _median_odd(xs: List[float]) -> float:
+    """If len(xs) is odd, the median is the middle element"""
+    return sorted(xs)[len(xs) // 2]
+    
+def _median_even(xs: List[float]) -> float:
+    """If len(xs) is even, it's the average of the middle two elements"""
+    sorted_xs = sorted(xs)
+    hi_midpoint = len(xs) // 2  # e.g. length 4 => hi_midpoint 2
+    return (sorted_xs[hi_midpoint - 1] + sorted_xs[hi_midpoint]) / 2
+    
+def median(v: List[float]) -> float:
+    """Finds the 'middle-most' value of v"""
+    return _median_even(v) if len(v) % 2 == 0 else _median_odd(v)
+
+# Quantile = it is a generalization of the median, representing the value under which a certain percentile of the data lies.
+# The median represents the value under which 50% of the data lies.
+
+def quantile(xs: List[float], p: float) -> float:
+    """Returns the pth-percentile value in x"""
+    p_index = int(p * len(xs))
+    return sorted(xs)[p_index]
+    
+# Mode, or most common value
+
+def mode(x: List[float]) -> List[float]:
+    """Returns a list, since there might be more than one mode"""
+    counts = Counter(x)
+    max_count = max(counts.values())
+    return [x_i for x_i, count in counts.items() if count == max_count]
+    
+# Dispersion = measures how spread out data is. 0 means not spread out at all, large values signify very spread out.
+# Range = difference between the largest and smalles elements
+
+def data_range(xs: List[float]) -> float:
+    return max(xs) - min(xs)
+    
+# Variance = has units that are the square of the original units.
+
+from dfs2.chapter04 import sum_of_squares
+
+def de_mean(xs: List[float]) -> List[float]:
+    """Translate xs by subtracting its mean (so the result has mean 0)"""
+    x_bar = mean(xs)
+    return [x - x_bar for x in xs]
+
+def variance(xs: List[float]) -> float:
+    """Almost the average squared deviation from the mean"""
+    assert len(xs) >= 2, "variance requires at least two elements"
+    n = len(xs)
+    deviations = de_mean(xs)
+    return sum_of_squares(deviations) / (n - 1)
+    
+# Because the variance does not make sense (squared units), often we look instead at the standard deviation.
+# SD still has outliers problem.
+
+import math
+
+def standard_deviation(xs: List[float]) -> float:
+    """The standard deviation is the square root of the variance"""
+    return math.sqrt(variance(xs))
+    
+# Interquartile: difference between the 75th percentile value and the 25th percentile value.
+# It is a more robust alternative whose computation is plainly unaffected by a small number of outliers.
+
+def interquartile_range(xs: List[float]) -> float:
+    """Returns the difference between the 75%-ile and the 25%-ile"""
+    return quantile(xs, 0.75) - quantile(xs, 0.25)
+    
